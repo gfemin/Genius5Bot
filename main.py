@@ -7,16 +7,18 @@ import os
 token = '8489254912:AAGaD-U9Cms4aYyLQnpQah0AYU25PDzFe-g'
 bot = telebot.TeleBot(token, parse_mode="HTML")
 
+OWNER_ID = '1915369904'
+
 @bot.message_handler(commands=["start"])
 def start(message):
-    if not str(message.chat.id) == '1915369904':
+    if str(message.chat.id) != OWNER_ID:
         bot.reply_to(message, "You cannot use the bot to contact developers to purchase a bot subscription @Rusisvirus")
         return
-    bot.reply_to(message, "Send the file now")
+    bot.reply_to(message, "𝐒𝐞𝐧𝐝 𝐭𝐡𝐞 𝐟𝐢𝐥𝐞 𝐧𝐨𝐰❤️")
 
 @bot.message_handler(content_types=["document"])
 def main(message):
-    if not str(message.chat.id) == '1915369904':
+    if str(message.chat.id) != OWNER_ID:
         bot.reply_to(message, "You cannot use the bot to contact developers to purchase a bot subscription @Rusisvirus")
         return
     
@@ -27,7 +29,7 @@ def main(message):
     cvv = 0
     lowfund = 0
     
-    ko = (bot.reply_to(message, "CHECKING....⌛").message_id)
+    ko = bot.reply_to(message, "𝐒𝐭𝐚𝐫𝐭𝐢𝐧𝐠 𝐍𝐨𝐰! ❤️").message_id
     ee = bot.download_file(bot.get_file(message.document.file_id).file_path)
     
     with open("combo.txt", "wb") as w:
@@ -39,39 +41,25 @@ def main(message):
             total = len(lino)
             
             for cc in lino:
-                current_dir = os.getcwd()
-                for filename in os.listdir(current_dir):
-                    if filename.endswith(".stop"):
-                        bot.edit_message_text(chat_id=message.chat.id, message_id=ko, text='STOP ✅\nBOT BY ➜ @Rusisvirus')
-                        os.remove('stop.stop')
-                        return
+                cc = cc.strip() # Remove extra spaces/newlines
                 
+                # ===== STOP CHECK =====
+                if os.path.exists("stop.stop"):
+                    bot.edit_message_text(chat_id=message.chat.id, message_id=ko, text='𝑺𝑻𝑶𝑷 ✅\n𝑩𝒐𝒕 𝑩𝒚 ➜ @Rusisvirus')
+                    os.remove('stop.stop')
+                    return
+                
+                # ===== BIN LOOKUP (Safe Method) =====
                 try:
                     data = requests.get('https://bins.antipublic.cc/bins/'+cc[:6]).json()
                 except:
-                    pass
+                    data = {}
                 
-                try:
-                    brand = data['brand']
-                except:
-                    brand = 'Unknown'
-                
-                try:
-                    card_type = data['type']
-                except:
-                    card_type = 'Unknown'
-                
-                try:
-                    country = data['country_name']
-                    country_flag = data['country_flag']
-                except:
-                    country = 'Unknown'
-                    country_flag = 'Unknown'
-                
-                try:
-                    bank = data['bank']
-                except:
-                    bank = 'Unknown'
+                brand = data.get('brand', 'Unknown')
+                card_type = data.get('type', 'Unknown')
+                country = data.get('country_name', 'Unknown')
+                country_flag = data.get('country_flag', '')
+                bank = data.get('bank', 'Unknown')
                 
                 start_time = time.time()
                 try:
@@ -80,27 +68,41 @@ def main(message):
                     print(e)
                     last = 'missing payment form'
                 
-                mes = types.InlineKeyboardMarkup(row_width=1)
-                cm1 = types.InlineKeyboardButton(f"• {cc} •", callback_data='u8')
-                status = types.InlineKeyboardButton(f"• STATUS ➜ {last} •", callback_data='u8')
-                cm3 = types.InlineKeyboardButton(f"• CHARGED ➜ [ {ch} ] •", callback_data='x')
-                cm4 = types.InlineKeyboardButton(f"• CCN ➜ [ {ccn} ] •", callback_data='x')
-                cm5 = types.InlineKeyboardButton(f"• CVV ➜ [ {cvv} ] •", callback_data='x')
-                cm6 = types.InlineKeyboardButton(f"• LOW FUNDS ➜ [ {lowfund} ] •", callback_data='x')
-                cm7 = types.InlineKeyboardButton(f"• DECLINED ➜ [ {dd} ] •", callback_data='x')
-                cm8 = types.InlineKeyboardButton(f"• TOTAL ➜ [ {total} ] •", callback_data='x')
-                stop = types.InlineKeyboardButton(f"[ STOP ]", callback_data='stop')
-                mes.add(cm1, status, cm3, cm4, cm5, cm6, cm7, cm8, stop)
-                
                 end_time = time.time()
                 execution_time = end_time - start_time
                 
-                bot.edit_message_text(chat_id=message.chat.id, message_id=ko, text='''Wait For Processing   
-by ➜ @Rusisvirus ''', reply_markup=mes)
+                # ===== DASHBOARD VIEW (OpenAI Style) =====
+                view_text = f"""\
+• <code>{cc}</code>
+
+🟢 sᴛᴀᴛᴜs  ➜ <code>{last}</code>
+
+💳 ᴄʜᴀʀɢᴇᴅ  ➜ <code>[ {ch} ]</code>
+
+🔐 ᴄᴄɴ ➜ <code>[ {ccn} ]</code>
+
+🔐 ᴄᴠᴠ ➜ <code>[ {cvv} ]</code>
+
+⚠️ ʟᴏᴡ ғᴜɴᴅs ➜ <code>[ {lowfund} ]</code>
+
+📊 ᴅᴇᴄʟɪɴᴇᴅ ➜ <code>[ {dd} ]</code>
+
+• ᴛᴏᴛᴀʟ ➜ <code>[ {total} ]</code>
+"""
+                # Single Stop Button
+                markup = types.InlineKeyboardMarkup(row_width=1)
+                markup.add(types.InlineKeyboardButton("⛔ sᴛᴏᴘ ⚠️", callback_data="stop"))
                 
-                msg = f''' 
+                bot.edit_message_text(chat_id=message.chat.id, message_id=ko, text=view_text, reply_markup=markup)
+                
+                # ===== LOGIC & HIT SENDER (Original Style Restored) =====
+                print(last)
+                
+                if 'Payment Successful' in last:
+                    ch += 1
+                    msg = f''' 
 𝐂𝐀𝐑𝐃: <code>{cc}</code>
-𝐑𝐞𝐬𝐩𝐨𝐧𝐬𝐞: <code>Hit $1.00 🔥</code>
+𝐑𝐞𝐬𝐩𝐨𝐧𝐬𝐞: <code>𝚂𝚞𝚌𝚌𝚎𝚜𝚜𝚏𝚞𝚕!🥵</code>
 
 𝐁𝐢𝐧 𝐈𝐧𝐟𝐨: <code>{cc[:6]}-{card_type} - {brand}</code>
 𝐁𝐚𝐧𝐤: <code>{bank}</code>
@@ -108,11 +110,6 @@ by ➜ @Rusisvirus ''', reply_markup=mes)
 
 𝐓𝐢𝐦𝐞: <code>1{"{:.1f}".format(execution_time)} second</code> 
 𝐁𝐨𝐭 𝐀𝐛𝐨𝐮𝐭: @Rusisvirus'''
-                
-                print(last)
-                
-                if 'Payment Successful' in last:
-                    ch += 1
                     bot.reply_to(message, msg)
                     
                 elif 'Your card does not support this type of purchase' in last:
@@ -122,9 +119,10 @@ by ➜ @Rusisvirus ''', reply_markup=mes)
                     ccn += 1
                     
                 elif 'funds' in last:
+                    lowfund += 1
                     msg = f'''			
 𝐂𝐀𝐑𝐃: <code>{cc}</code>
-𝐑𝐞𝐬𝐩𝐨𝐧𝐬𝐞: <code>Insufficient funds 🔥</code>
+𝐑𝐞𝐬𝐩𝐨𝐧𝐬𝐞: <code>𝙸𝚗𝚜𝚞𝚏𝚏𝚒𝚌𝚒𝚎𝚗𝚝 𝚏𝚞𝚗𝚍𝚜 😂</code>
 
 𝐁𝐢𝐧 𝐈𝐧𝐟𝐨: <code>{cc[:6]}-{card_type} - {brand}</code>
 𝐁𝐚𝐧𝐤: <code>{bank}</code>
@@ -132,13 +130,13 @@ by ➜ @Rusisvirus ''', reply_markup=mes)
 
 𝐓𝐢𝐦𝐞: <code>1{"{:.1f}".format(execution_time)} second</code> 
 𝐁𝐨𝐭 𝐀𝐛𝐨𝐮𝐭: @Rusisvirus'''
-                    lowfund += 1
                     bot.reply_to(message, msg)
                     
                 elif 'The payment needs additional action before completion!' in last:
+                    cvv += 1
                     msg = f'''			
 𝐂𝐀𝐑𝐃: <code>{cc}</code>
-𝐑𝐞𝐬𝐩𝐨𝐧𝐬𝐞: <code>3ds ✅</code>
+𝐑𝐞𝐬𝐩𝐨𝐧𝐬𝐞: <code>𝟹𝙳𝚂 👍</code>
 
 𝐁𝐢𝐧 𝐈𝐧𝐟𝐨: <code>{cc[:6]}-{card_type} - {brand}</code>
 𝐁𝐚𝐧𝐤: <code>{bank}</code>
@@ -146,21 +144,30 @@ by ➜ @Rusisvirus ''', reply_markup=mes)
 
 𝐓𝐢𝐦𝐞: <code>1{"{:.1f}".format(execution_time)} second</code> 
 𝐁𝐨𝐭 𝐀𝐛𝐨𝐮𝐭: @Rusisvirus'''
-                    cvv += 1
                     bot.reply_to(message, msg)
                         
                 else:
                     dd += 1
-                    time.sleep(3)
+                    time.sleep(3) # Wait a bit on declined to avoid flood limits
                     
     except Exception as e:
         print(e)
     
-    bot.edit_message_text(chat_id=message.chat.id, message_id=ko, text='CHECKED ✅\nBOT BY ➜ @Rusisvirus')
+    bot.edit_message_text(chat_id=message.chat.id, message_id=ko, text='𝑪𝒉𝒆𝒄𝒌𝒊𝒏𝒈 𝑫𝒐𝒏𝒆!\n𝑩𝒐𝒕 𝑩𝒚 ➜ @Rusisvirus')
 
 @bot.callback_query_handler(func=lambda call: call.data == 'stop')
 def menu_callback(call):
     with open("stop.stop", "w") as file:
         pass
+    bot.answer_callback_query(call.id, "Stopping...")
 
-bot.polling()
+# ===== SAFE POLLING =====
+import telebot.apihelper as apihelper
+apihelper.REQUEST_TIMEOUT = 30
+
+while True:
+    try:
+        bot.polling(non_stop=True, timeout=20, long_polling_timeout=20)
+    except Exception as e:
+        print("Polling error:", e)
+        time.sleep(5)
