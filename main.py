@@ -145,7 +145,7 @@ def run_checker(message):
                 
                 is_hit = 'Payment Successful' in last or 'funds' in last or 'security code' in last
                 
-                if is_hit or (dd % 1 == 0):
+                if is_hit or (dd % 15 == 0):
                     bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
                 
                 # ===== HIT SENDER & SAVER =====
