@@ -11,8 +11,8 @@ PROXY_HOST = 'geo.g-w.info'
 PROXY_PORT = '10080'
 
 # 🔥 မင်းရဲ့ Proxy User/Pass
-PROXY_USER = 'user-RWTL64GEW8jkTBty-type-residential-session-xg0gkepv-country-US-city-Virginia_Beach-rotation-15'
-PROXY_PASS = 'EJJT0uWaSUv4yUXJ'
+PROXY_USER = 'user-7xkEOw8bXcNNWHHW-type-residential-session-mktef1si-country-US-city-Virginia_Beach-rotation-15'
+PROXY_PASS = 'CMvQFPYozpgFTlXC'
 
 # Proxy String
 proxy_url = f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}"
