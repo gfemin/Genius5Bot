@@ -145,8 +145,12 @@ def run_checker(message):
                 
                 is_hit = 'Payment Successful' in last or 'funds' in last or 'security code' in last
                 
-                if is_hit or (dd % 15 == 0):
-                    bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
+                # 🔥 HERE IS THE FIX (ဒီနေရာမှာ ပြင်ထားတယ်) 🔥
+                if is_hit or (dd % 10 == 0):
+                    try:
+                        bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
+                    except Exception as e:
+                        pass # Error တက်ရင် ဘာမှမလုပ်ဘဲ ကျော်မယ် (Script မရပ်တော့ဘူး)
                 
                 # ===== HIT SENDER & SAVER =====
                 print(f"{chat_id} : {cc} -> {last}")
@@ -175,7 +179,11 @@ def run_checker(message):
                                     
                 elif 'security code is incorrect' in last or 'security code is invalid' in last:
                     ccn += 1
-                    bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
+                    # ဒီနေရာမှာလည်း Try Except ခံထားလိုက်တာ ပိုကောင်းတယ်
+                    try:
+                        bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
+                    except:
+                        pass
                     
                 elif 'funds' in last:
                     lowfund += 1
