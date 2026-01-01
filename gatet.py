@@ -116,20 +116,8 @@ def Tele(ccx):
             timeout=40
         )
         
-        # ==========================================
-        # 🔥 IMPROVED RESULT CHECK (Live မလွတ်အောင် ပြင်ထားသည်)
-        # ==========================================
         try:
-            resp_json = response.json()
-            
-            # ၁။ Success ဖြစ်လား အရင်စစ်မယ် (Live ဆိုရင် Message မပါလည်း Live ပဲ)
-            if resp_json.get('success') == True:
-                result = "Charged 0.5€ ✅"
-            
-            # ၂။ Success မဟုတ်မှ Message ကို လိုက်ရှာမယ်
-            else:
-                result = resp_json.get('message', 'Decline⛔')
-
+            result = response.json()['message']
         except:
             if "Cloudflare" in response.text or response.status_code == 403:
                 result = "IP Blocked by Site ❌"
@@ -137,6 +125,7 @@ def Tele(ccx):
                 result = "Decline⛔"
 
     except Exception as e:
+        # ၃ ခါလုံး Retry လုပ်လို့မှ မရရင်တော့ တကယ် Error ပါ
         result = f"Connection Failed (Retry Limit) ⚠️"
         
     return result
