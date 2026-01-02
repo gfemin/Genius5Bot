@@ -18,32 +18,32 @@ PROXY_PASS = 'CMvQFPYozpgFTlXC'
 # Proxy String
 proxy_url = f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}"
 proxies = {
-	'http': proxy_url,
-	'https': proxy_url
+    'http': proxy_url,
+    'https': proxy_url
 }
 
 def Tele(ccx):
-	try:
-		ccx = ccx.strip()
-		n = ccx.split("|")[0]
-		mm = ccx.split("|")[1]
-		yy = ccx.split("|")[2]
-		cvc = ccx.split("|")[3]
+    try:
+        ccx = ccx.strip()
+        n = ccx.split("|")[0]
+        mm = ccx.split("|")[1]
+        yy = ccx.split("|")[2]
+        cvc = ccx.split("|")[3]
 
-		if "20" in yy:
-			yy = yy.split("20")[1]
+        if "20" in yy:
+            yy = yy.split("20")[1]
 
-		letters = string.ascii_lowercase + string.digits
-		random_name = ''.join(random.choice(letters) for i in range(10))
-		random_email = f"{random_name}@gmail.com"
+        letters = string.ascii_lowercase + string.digits
+        random_name = ''.join(random.choice(letters) for i in range(10))
+        random_email = f"{random_name}@gmail.com"
 
-		# 🔥 RETRY SYSTEM
-		session = requests.Session()
-		retry = Retry(connect=3, backoff_factor=0.5)
-		adapter = HTTPAdapter(max_retries=retry)
-		session.mount('http://', adapter)
-		session.mount('https://', adapter)
-		session.proxies = proxies
+        # 🔥 RETRY SYSTEM
+        session = requests.Session()
+        retry = Retry(connect=3, backoff_factor=0.5)
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
+        session.proxies = proxies
 
         # ==========================================
         # Step 1: Create Payment Method (Stripe)
