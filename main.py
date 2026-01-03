@@ -180,7 +180,7 @@ def run_checker(message):
                 is_hit = 'Donation Successful!' in last or 'funds' in last or 'security code' in last or 'Your card does not support' in last
                 
                 # Update UI
-                if is_hit or (index == 1) or (index % 15 == 0) or (index == total):
+                if is_hit or (index == 1) or (index % 8 == 0) or (index == total):
                     view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, cc, last)
                     try:
                         bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
