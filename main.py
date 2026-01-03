@@ -8,7 +8,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 # ==========================================
 # 👇 BOT TOKEN
 # ==========================================
-token = 'YOUR_BOT_TOKEN_HERE'  # မင်းရဲ့ Token ထည့်ပါ
+token = '8489254912:AAGaD-U9Cms4aYyLQnpQah0AYU25PDzFe-g'  # မင်းရဲ့ Token ထည့်ပါ
 bot = telebot.TeleBot(token, parse_mode="HTML")
 
 # ==========================================
