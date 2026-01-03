@@ -8,7 +8,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 # ==========================================
 # 👇 BOT TOKEN
 # ==========================================
-token = '8489254912:AAGaD-U9Cms4aYyLQnpQah0AYU25PDzFe-g'  # မင်းရဲ့ Token
+token = '8489254912:AAGaD-U9Cms4aYyLQnpQah0AYU25PDzFe-g'  # မင်းရဲ့ Token ထည့်ပါ
 bot = telebot.TeleBot(token, parse_mode="HTML")
 
 # ==========================================
@@ -22,7 +22,7 @@ ALLOWED_IDS = [
 ]
 
 # ==========================================
-# 🎨 UI HELPER FUNCTION (UPDATED DESIGN)
+# 🎨 UI HELPER FUNCTION (CLEAN BULLET STYLE - SHORT LINES)
 # ==========================================
 def get_dashboard_ui(total, current, live, die, ccn, low, cvv, last_cc, last_response):
     # Percentage Calculation
@@ -40,18 +40,18 @@ def get_dashboard_ui(total, current, live, die, ccn, low, cvv, last_cc, last_res
     else:
         display_response = last_response
 
-    # The Design (Header moved inside lines, Lines lengthened)
+    # The Design (Header Removed, Short Lines, Spacing Fixed)
+    line = "━━━━━━━━━━━━"
     text = (
-        f"━━━━━━━━━━━━━━━━━━━━━━━━\n"          # မျဉ်းရှည် (Top)
-        f"• <b>PREMIUM ACCESS | VIP</b>\n"     # Header ကို မျဉ်းအောက်ပို့လိုက်ပီ
-        f"━━━━━━━━━━━━━━━━━━━━━━━━\n"          # မျဉ်းရှည် (Separator)
-        f"• <code>{display_cc}</code>\n\n"
-        f"• <b>Result:</b> {display_response}\n\n"
+        f"{line}\n"
+        f"• <code>{display_cc}</code>\n"
+        f"• <b>Result:</b> {display_response}\n"
         f"• <b>Stripe Charge ($0.5)</b>\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━━\n"          # မျဉ်းရှည်
+        f"{line}\n"
+        # Spacing fixed here by removing extra newlines in f-string
         f"• <b>Hits:</b> {live}    • <b>Dead:</b> {die}\n"
-        f"• <b>CCN:</b> {ccn}     • <b>Low:</b>  {low}\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━━\n"          # မျဉ်းရှည်
+        f"• <b>CCN:</b>  {ccn}    • <b>Low:</b>   {low}\n" 
+        f"{line}\n"
         f"• <b>Processing...</b> {percent}%"
     )
     
@@ -192,54 +192,54 @@ def run_checker(message):
                         f.write(f"{cc} - {last} - {bank} ({country})\n")
 
                 # ==========================================
-                # 🔥 HIT MESSAGES (Updated Lines & Bold Credit)
+                # 🔥 HIT MESSAGES (Short Lines, No Stickers, Bold Name)
                 # ==========================================
-                
+                line = "━━━━━━━━━━━━"
                 if 'Donation Successful!' in last:
                     ch += 1
-                    msg = f'''━━━━━━━━━━━━━━━━━━━━━━━━
+                    msg = f'''{line}
 • <b>Charge Hit!</b>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Card:</b> <code>{cc}</code>
 • <b>Result:</b> {last}
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Bin:</b> <code>{brand} - {card_type}</code>
 • <b>Bank:</b> <code>{bank}</code>
 • <b>Country:</b> <code>{country} - {country_flag}</code>
 • <b>Time:</b> <code>{"{:.1f}".format(execution_time)} sec</code>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 <b>Bot by:</b> <b>@Rusisvirus</b>'''
                     bot.reply_to(message, msg)
                     
                 elif 'Your card does not support this type of purchase' in last:
                     cvv += 1
-                    msg = f'''━━━━━━━━━━━━━━━━━━━━━━━━
+                    msg = f'''{line}
 • <b>CVV Hit!</b>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Card:</b> <code>{cc}</code>
 • <b>Result:</b> CVV Mismatch
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Bin:</b> <code>{brand} - {card_type}</code>
 • <b>Bank:</b> <code>{bank}</code>
 • <b>Country:</b> <code>{country} - {country_flag}</code>
 • <b>Time:</b> <code>{"{:.1f}".format(execution_time)} sec</code>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 <b>Bot by:</b> <b>@Rusisvirus</b>'''
                     bot.reply_to(message, msg)
                 
                 elif 'security code is incorrect' in last or 'security code is invalid' in last:
                     ccn += 1
-                    msg = f'''━━━━━━━━━━━━━━━━━━━━━━━━
+                    msg = f'''{line}
 • <b>CCN Live!</b>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Card:</b> <code>{cc}</code>
 • <b>Result:</b> CCN Live
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Bin:</b> <code>{brand} - {card_type}</code>
 • <b>Bank:</b> <code>{bank}</code>
 • <b>Country:</b> <code>{country} - {country_flag}</code>
 • <b>Time:</b> <code>{"{:.1f}".format(execution_time)} sec</code>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 <b>Bot by:</b> <b>@Rusisvirus</b>'''
                     bot.reply_to(message, msg)
                     
@@ -252,33 +252,33 @@ def run_checker(message):
                     
                 elif 'funds' in last:
                     lowfund += 1
-                    msg = f'''━━━━━━━━━━━━━━━━━━━━━━━━
+                    msg = f'''{line}
 • <b>Insufficient Funds!</b>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Card:</b> <code>{cc}</code>
 • <b>Result:</b> Low Funds
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Bin:</b> <code>{brand} - {card_type}</code>
 • <b>Bank:</b> <code>{bank}</code>
 • <b>Country:</b> <code>{country} - {country_flag}</code>
 • <b>Time:</b> <code>{"{:.1f}".format(execution_time)} sec</code>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 <b>Bot by:</b> <b>@Rusisvirus</b>'''
                     bot.reply_to(message, msg)
                     
                 elif 'The payment needs additional action before completion!' in last:
                     cvv += 1
-                    msg = f'''━━━━━━━━━━━━━━━━━━━━━━━━
+                    msg = f'''{line}
 • <b>3D Secure!</b>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Card:</b> <code>{cc}</code>
 • <b>Result:</b> 3D Action Required
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 • <b>Bin:</b> <code>{brand} - {card_type}</code>
 • <b>Bank:</b> <code>{bank}</code>
 • <b>Country:</b> <code>{country} - {country_flag}</code>
 • <b>Time:</b> <code>{"{:.1f}".format(execution_time)} sec</code>
-━━━━━━━━━━━━━━━━━━━━━━━━
+{line}
 <b>Bot by:</b> <b>@Rusisvirus</b>'''
                     bot.reply_to(message, msg)
                         
@@ -303,7 +303,7 @@ def menu_callback(call):
     bot.answer_callback_query(call.id, "Stopping...")
 
 # ===== POLLING =====
-print("🤖 Bot Started (Fixed Lines & Header)...")
+print("🤖 Bot Started (Clean Bullet UI - Shortest Lines)...")
 while True:
     try:
         bot.polling(non_stop=True, timeout=20, long_polling_timeout=20)
