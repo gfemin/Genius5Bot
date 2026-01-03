@@ -22,9 +22,9 @@ ALLOWED_IDS = [
 ]
 
 # ==========================================
-# 🎨 UI HELPER FUNCTION (PERFECT ALIGNMENT)
+# 🎨 UI HELPER FUNCTION (ADDED 3DS)
 # ==========================================
-def get_dashboard_ui(total, current, live, die, ccn, low, cvv, last_cc, last_response):
+def get_dashboard_ui(total, current, live, die, ccn, low, cvv, threeds, last_cc, last_response):
     # Percentage Calculation
     percent = int((current / total) * 100) if total > 0 else 0
     
@@ -40,19 +40,20 @@ def get_dashboard_ui(total, current, live, die, ccn, low, cvv, last_cc, last_res
     else:
         display_response = last_response
 
-    # The Design (Matches your Sample exactly)
+    # The Design (Balanced 2x3 Layout)
     line = "━━━━━━━━━━━━━━━━━━"
     
     text = (
         f"{line}\n"
-        f"• <b>RUSISVIRUS | VIP</b>\n"
+        f"• <b>RUSISVIRUS | VIP 🇲🇲</b>\n"
         f"{line}\n"
         f"• <code>{display_cc}</code>\n"
         f"• <b>Result:</b> {display_response}\n"
         f"• <b>Stripe Charge ($0.5)</b>\n"
         f"{line}\n"
         f"• <b>Hits:</b> {live}    • <b>Dead:</b> {die}\n"
-        f"• <b>CCN:</b>  {ccn}    • <b>Low:</b>   {low}\n" 
+        f"• <b>CVV:</b>  {cvv}    • <b>CCN:</b>  {ccn}\n"
+        f"• <b>Low:</b>   {low}    • <b>3Ds:</b>   {threeds}\n" 
         f"{line}\n"
         f"• <b>Processing...</b> {percent}%"
     )
@@ -113,6 +114,7 @@ def run_checker(message):
     ccn = 0
     cvv = 0
     lowfund = 0
+    threeds = 0  # <--- New 3Ds Counter Added
     
     chat_id = message.chat.id
     
@@ -131,7 +133,7 @@ def run_checker(message):
             total = len(lino)
             
             # Initial UI
-            view_text, markup = get_dashboard_ui(total, 0, 0, 0, 0, 0, 0, "Wait...", "Starting...")
+            view_text, markup = get_dashboard_ui(total, 0, 0, 0, 0, 0, 0, 0, "Wait...", "Starting...")
             bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
 
             for index, cc in enumerate(lino, 1):
@@ -177,11 +179,11 @@ def run_checker(message):
                 end_time = time.time()
                 execution_time = end_time - start_time
                 
-                is_hit = 'Donation Successful!' in last or 'funds' in last or 'security code' in last or 'Your card does not support' in last
+                is_hit = 'Donation Successful!' in last or 'funds' in last or 'security code' in last or 'Your card does not support' in last or 'completion' in last
                 
                 # Update UI
                 if is_hit or (index == 1) or (index % 8 == 0) or (index == total):
-                    view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, cc, last)
+                    view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, threeds, cc, last)
                     try:
                         bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
                     except Exception as e:
@@ -194,18 +196,15 @@ def run_checker(message):
                         f.write(f"{cc} - {last} - {bank} ({country})\n")
 
                 # ==========================================
-                # 🔥 HIT MESSAGES (MATCHING YOUR SAMPLE)
+                # 🔥 RESULT MESSAGES
                 # ==========================================
-                # Line matches your sample length
                 line = "━━━━━━━━━━━━━━━━━━"
                 
                 if 'Donation Successful!' in last:
                     ch += 1
                     msg = f'''{line}
-• <b>Charge Hit!</b>
-{line}
 • <code>{cc}</code>
-• <b>Result:</b> {last}
+• <b>Result:</b> PAYMENT SUCCESSFUL! ✅
 {line}
 • <b>Bin:</b> {brand} - {card_type}
 • <b>Bank:</b> {bank}
@@ -218,10 +217,8 @@ def run_checker(message):
                 elif 'Your card does not support this type of purchase' in last:
                     cvv += 1
                     msg = f'''{line}
-• <b>CVV Hit!</b>
-{line}
 • <code>{cc}</code>
-• <b>Result:</b> CVV Mismatch
+• <b>Result:</b> CVV MATCH ✅
 {line}
 • <b>Bin:</b> {brand} - {card_type}
 • <b>Bank:</b> {bank}
@@ -234,10 +231,8 @@ def run_checker(message):
                 elif 'security code is incorrect' in last or 'security code is invalid' in last:
                     ccn += 1
                     msg = f'''{line}
-• <b>CCN Live!</b>
-{line}
 • <code>{cc}</code>
-• <b>Result:</b> CCN Live
+• <b>Result:</b> CCN LIVE ✅
 {line}
 • <b>Bin:</b> {brand} - {card_type}
 • <b>Bank:</b> {bank}
@@ -248,7 +243,7 @@ def run_checker(message):
                     bot.reply_to(message, msg)
                     
                     # Update UI immediately for Hits
-                    view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, cc, last)
+                    view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, threeds, cc, last)
                     try:
                         bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
                     except:
@@ -257,10 +252,8 @@ def run_checker(message):
                 elif 'funds' in last:
                     lowfund += 1
                     msg = f'''{line}
-• <b>Insufficient Funds!</b>
-{line}
 • <code>{cc}</code>
-• <b>Result:</b> Low Funds
+• <b>Result:</b> INSUFFICIENT FUNDS! 🚫
 {line}
 • <b>Bin:</b> {brand} - {card_type}
 • <b>Bank:</b> {bank}
@@ -271,12 +264,10 @@ def run_checker(message):
                     bot.reply_to(message, msg)
                     
                 elif 'The payment needs additional action before completion!' in last:
-                    cvv += 1
+                    threeds += 1  # <--- Increment 3Ds Counter
                     msg = f'''{line}
-• <b>3D Secure!</b>
-{line}
 • <code>{cc}</code>
-• <b>Result:</b> 3D Action Required
+• <b>Result:</b> 3D ACTION REQUIRED ⚠️
 {line}
 • <b>Bin:</b> {brand} - {card_type}
 • <b>Bank:</b> {bank}
@@ -307,7 +298,7 @@ def menu_callback(call):
     bot.answer_callback_query(call.id, "Stopping...")
 
 # ===== POLLING =====
-print("🤖 Bot Started (Pixel Perfect Layout)...")
+print("🤖 Bot Started (Added 3Ds Support)...")
 while True:
     try:
         bot.polling(non_stop=True, timeout=20, long_polling_timeout=20)
