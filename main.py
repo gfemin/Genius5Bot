@@ -45,7 +45,7 @@ def get_dashboard_ui(total, current, live, die, ccn, low, cvv, last_cc, last_res
     
     text = (
         f"{line}\n"
-        f"• <b>PREMIUM ACCESS | VIP</b>\n"
+        f"• <b>RUSISVIRUS | VIP</b>\n"
         f"{line}\n"
         f"• <code>{display_cc}</code>\n"
         f"• <b>Result:</b> {display_response}\n"
@@ -180,7 +180,7 @@ def run_checker(message):
                 is_hit = 'Donation Successful!' in last or 'funds' in last or 'security code' in last or 'Your card does not support' in last
                 
                 # Update UI
-                if is_hit or (index == 1) or (index % 1 == 0) or (index == total):
+                if is_hit or (index == 1) or (index % 15 == 0) or (index == total):
                     view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, cc, last)
                     try:
                         bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
