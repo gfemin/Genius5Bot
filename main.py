@@ -22,9 +22,9 @@ ALLOWED_IDS = [
 ]
 
 # ==========================================
-# 🎨 UI HELPER FUNCTION (PREMIUM GOLD VIP)
+# 🎨 UI HELPER FUNCTION (WITH RESPONSE MSG)
 # ==========================================
-def get_dashboard_ui(total, current, live, die, ccn, low, cvv, last_cc):
+def get_dashboard_ui(total, current, live, die, ccn, low, cvv, last_cc, last_response):
     # Percentage Calculation
     percent = int((current / total) * 100) if total > 0 else 0
     
@@ -34,11 +34,19 @@ def get_dashboard_ui(total, current, live, die, ccn, low, cvv, last_cc):
     else:
         display_cc = last_cc
 
+    # Response ကို တိုတိုရှင်းရှင်းပြဖို့ (Optional - လိုအပ်ရင်သုံးရန်)
+    # စာအရမ်းရှည်ရင် ဖြတ်ထုတ်မယ် (Telegram UI မပျက်အောင်)
+    if len(last_response) > 40:
+        display_response = last_response[:40] + "..."
+    else:
+        display_response = last_response
+
     # The Design
     text = (
         f"💎 <b>PREMIUM ACCESS | VIP</b>\n"
         f"━━━━━━━━━━━━━━━━━━\n"
         f"💳 <code>{display_cc}</code>\n"
+        f"🔔 <b>Result:</b> {display_response}\n"  # 🔥 ဒီနေရာမှာ Response ပြမယ်
         f"⚙️ <b>Stripe Charge ($0.5)</b>\n"
         f"━━━━━━━━━━━━━━━━━━\n"
         f"✅ <b>Hits:</b> {live}     ❌ <b>Dead:</b> {die}\n"
@@ -121,8 +129,8 @@ def run_checker(message):
             lino = file.readlines()
             total = len(lino)
             
-            # 🔥 Fix: Show UI immediately before checking starts
-            view_text, markup = get_dashboard_ui(total, 0, 0, 0, 0, 0, 0, "Wait...")
+            # 🔥 Fix: Show UI immediately with "Starting..." status
+            view_text, markup = get_dashboard_ui(total, 0, 0, 0, 0, 0, 0, "Wait...", "Starting...")
             bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
 
             for index, cc in enumerate(lino, 1):
@@ -163,7 +171,7 @@ def run_checker(message):
                     last = 'Gateway Time Out ❌'
                 except Exception as e:
                     print(e)
-                    last = 'Error'
+                    last = 'System Error ⚠️'
                 
                 end_time = time.time()
                 execution_time = end_time - start_time
@@ -176,7 +184,8 @@ def run_checker(message):
                 
                 # Update UI: If Hit OR 1st Card OR Every 5 Cards OR Last Card
                 if is_hit or (index == 1) or (index % 5 == 0) or (index == total):
-                    view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, cc)
+                    # 🔥 Pass 'last' (response message) to UI function
+                    view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, cc, last)
                     try:
                         bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
                     except Exception as e:
@@ -196,7 +205,7 @@ def run_checker(message):
                     msg = f'''✅ <b>Charge Hit!</b>
 ━━━━━━━━━━━━━━━━━━━━
 💳 <code>{cc}</code>
-🚀 <b>Response:</b> Payment Successful ✅
+🔔 <b>Result:</b> {last}
 ━━━━━━━━━━━━━━━━━━━━
 🏦 <b>Bin:</b> {brand} - {card_type}
 🏛 <b>Bank:</b> {bank}
@@ -211,7 +220,7 @@ def run_checker(message):
                     msg = f'''✅ <b>CVV Hit!</b>
 ━━━━━━━━━━━━━━━━━━━━
 💳 <code>{cc}</code>
-🚀 <b>Response:</b> CVV Mismatch ⚠️
+🔔 <b>Result:</b> CVV Mismatch ⚠️
 ━━━━━━━━━━━━━━━━━━━━
 🏦 <b>Bin:</b> {brand} - {card_type}
 🏛 <b>Bank:</b> {bank}
@@ -226,7 +235,7 @@ def run_checker(message):
                     msg = f'''🔐 <b>CCN Live!</b>
 ━━━━━━━━━━━━━━━━━━━━
 💳 <code>{cc}</code>
-🚀 <b>Response:</b> CCN Live ✅
+🔔 <b>Result:</b> CCN Live ✅
 ━━━━━━━━━━━━━━━━━━━━
 🏦 <b>Bin:</b> {brand} - {card_type}
 🏛 <b>Bank:</b> {bank}
@@ -237,7 +246,7 @@ def run_checker(message):
                     bot.reply_to(message, msg)
                     
                     # Update immediately for CCN
-                    view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, cc)
+                    view_text, markup = get_dashboard_ui(total, index, ch, dd, ccn, lowfund, cvv, cc, last)
                     try:
                         bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
                     except:
@@ -248,7 +257,7 @@ def run_checker(message):
                     msg = f'''⚠️ <b>Insufficient Funds!</b>
 ━━━━━━━━━━━━━━━━━━━━
 💳 <code>{cc}</code>
-🚀 <b>Response:</b> Low Funds ⛔
+🔔 <b>Result:</b> Low Funds ⛔
 ━━━━━━━━━━━━━━━━━━━━
 🏦 <b>Bin:</b> {brand} - {card_type}
 🏛 <b>Bank:</b> {bank}
@@ -263,7 +272,7 @@ def run_checker(message):
                     msg = f'''⚠️ <b>3D Secure!</b>
 ━━━━━━━━━━━━━━━━━━━━
 💳 <code>{cc}</code>
-🚀 <b>Response:</b> 3D Action Required 🔄
+🔔 <b>Result:</b> 3D Action Required 🔄
 ━━━━━━━━━━━━━━━━━━━━
 🏦 <b>Bin:</b> {brand} - {card_type}
 🏛 <b>Bank:</b> {bank}
@@ -294,7 +303,7 @@ def menu_callback(call):
     bot.answer_callback_query(call.id, "Stopping...")
 
 # ===== POLLING =====
-print("🤖 Premium VIP Bot Started...")
+print("🤖 Premium VIP Bot Started (With Response Display)...")
 while True:
     try:
         bot.polling(non_stop=True, timeout=20, long_polling_timeout=20)
